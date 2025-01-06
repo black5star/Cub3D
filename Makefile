@@ -1,8 +1,7 @@
 NAME = cub3d
-CC = cc
-CFLAGS = #Wall -Wextra -Werror
-LFLAGS = -Lmlx_linux -L./lib -lXext -lX11 -lm
-INCLUDES = -Imlx_linux
+CC = gcc
+CFLAGS = -Wall -Wextra -Werror
+FLAGS = -Lmlx_linux -lmlx_Linux -L./mlx_linux/minilibx-linux/ -Imlx_linux -lXext -lX11 -lm -lz
 
 SRC = main.c \
       parse_map.c \
@@ -16,14 +15,14 @@ LIBFT = libft/libft.a
 all: $(NAME)
 
 $(NAME): $(LIBFT) $(OBJ)
-	@$(CC) $(OBJ) $(LIBFT) $(LFLAGS) $(INCLUDES) -o $(NAME)
+	@$(CC) $(OBJ) $(LIBFT) $(CFLAGS) $(FLAGS) -o $(NAME)
 	@echo "Cub3D is ready!"
 
 $(LIBFT):
 	@make -C libft
 
-%.o: %.c
-	@$(CC) $(CFLAGS) -c $< -o $@
+.c.o:
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	@make clean -C libft

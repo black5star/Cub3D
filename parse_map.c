@@ -31,7 +31,6 @@ int	fillemptyspace(t_game *game, int j, char *s)
 
 bool	checkwall(char **map, int j)
 {
-	int i;
 	int size;
 	int len;
 

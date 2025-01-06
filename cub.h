@@ -8,17 +8,18 @@
 # include <fcntl.h>
 # include <math.h>
 # include <stdbool.h>
-# include "libft/libft.h"
-# include "lib/mlx.h"
+# include "./libft/libft.h"
+# include "./mlx_linux/minilibx-linux/mlx.h"
 
-#define BUFFER_SIZE 42
+# define BUFFER_SIZE 42
+# define WIND_W 1280
+# define WIND_H 720
 
 typedef struct s_game
 {
 	void	*mlx;
 	void	*win;
-	int		win_h;
-	int		win_w;
+	char	**map;
 	char    *north;
     char    *south;
     char    *west;
@@ -28,13 +29,6 @@ typedef struct s_game
 	char	*save;
 	int		p_x;
 	int		p_y;
-	// float	x;
-	// float	y;
-	// float	dir;
-	// float	plane;
-	// float	move_speed;
-	// float	rot_speed;
-	char	**map;
 }               t_game;
 
 size_t	ftstrlen(const char *s);

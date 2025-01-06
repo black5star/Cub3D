@@ -36,12 +36,13 @@ int main(int ac, char **av)
     game = parsing(av[1]);
     if (!game)
         return (1);
-    if(!parse_map(game))
-        return(ft_free(game), 1);
+    if (!parse_map(game))
+        return (ft_free(game), 1);
     printf("good map\n");
-    // game->mlx = mlx_init();
-    // game->win = mlx_new_window(game->mlx, game->win_h, game->win_w, "Cub3D");
-    // mlx_loop(game->mlx);
+    game->mlx = mlx_init();
+    game->win = mlx_new_window(game->mlx, WIND_W, WIND_H, "Cub3");
+
+    mlx_loop(game->mlx);
     ft_free(game);
     return(0);
 }
