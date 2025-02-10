@@ -1,5 +1,9 @@
-
 #include "cub.h"
+
+void	err(char *str)
+{
+	ft_putstr_fd(str, 2);
+}
 
 size_t	ftstrlen(const char *s)
 {

@@ -1,13 +1,16 @@
 NAME = cub3d
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror
-FLAGS = -Lmlx_linux -lmlx_Linux -L./mlx_linux/minilibx-linux/ -Imlx_linux -lXext -lX11 -lm -lz
+CFLAGS = -Wall -Wextra #-fsanitize=address -g3 -Werror
+FLAGS = -Lmlx_linux -lmlx_Linux -L./minilibx-linux/ -Imlx_linux -lXext -lX11 -lm -lz
 
 SRC = main.c \
       parse_map.c \
       get_next_line.c \
       get_next_line_utils.c \
-      parsing.c
+      parsing.c \
+	  parsing1.c \
+	  parsing2.c \
+	  parsing3.c \
 
 OBJ = $(SRC:.c=.o)
 LIBFT = libft/libft.a
