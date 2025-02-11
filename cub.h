@@ -10,11 +10,11 @@
 # include <stdbool.h>
 # include "./libft/libft.h"
 # include "./minilibx-linux/mlx.h"
-
+ 
 # define BUFFER_SIZE 42
 # define WIND_W 1280
 # define WIND_H 720
-# define MOVE_SPEED 4
+# define SPEED 1
 # define M_PI 3.14159265358979323846
 # define TILE_SIZE 50
 # define PLAYER_COLOR 0x48db09

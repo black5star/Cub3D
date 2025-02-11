@@ -6,6 +6,23 @@ int	ft_exit(t_game *game)
 	exit(0);
 }
 
+int	wall_checker(t_game *game, int x, int y)
+{
+	int	i;
+	int	j;
+
+	if (x <= 0 || y <= 0)
+		return (1);
+	i = x / TILE_SIZE;
+	j = y / TILE_SIZE;
+	if (game->map[j] && game->map[j][i])
+	{
+		if (game->map[j][i] == '1')
+			return (1);
+	}
+	return (0);
+}
+
 void	fill_square(t_game *game, int x, int y, int color)
 {
 	int i;
@@ -23,11 +40,11 @@ void	fill_square(t_game *game, int x, int y, int color)
 void	draw_player(t_game *game, int x, int y, int color)
 {
 	int i;
-	int j = 0;
+	int j = -1;
 
 	while (++j < TILE_SIZE / 2)
 	{
-		i = 0;
+		i = -1;
 		while(++i < TILE_SIZE / 2)
 			mlx_pixel_put(game->mlx, game->win, x + i, y + j, color);
 	}
@@ -49,7 +66,6 @@ void	render_map(t_game *game)
 				fill_square(game, i, j, 0xffffff);
 			if (game->map[j][i] == game->pv)
 			{
-				// printf("px %d and py %d\n", game->px, game->py);
 				draw_player(game, game->px, game->py, PLAYER_COLOR);
 				game->map[j][i] = '0';
 			}
@@ -59,72 +75,40 @@ void	render_map(t_game *game)
 
 void	go_up(t_game *game)
 {
-	// int x;
-	// int y;
-
-	// x = game->px / TILE_SIZE;
-	// y = game->py / TILE_SIZE;
-	if (1)
+	if (!wall_checker(game, game->px, game->py - SPEED))
 	{
-		draw_player(game, game->px, game->py, 0xffffff);
-		game->py -= 5;
-		// game->map[game->py][game->px] = 'P';
-		// game->map[game->py + 1][game->px] = '0';
-		// render_map(game);
+		game->py -= SPEED;
+		render_map(game);
 		draw_player(game, game->px, game->py, PLAYER_COLOR);
 	}
 }
 
 void	go_down(t_game *game)
 {
-	// int x;
-	// int y;
-
-	// x = game->px / TILE_SIZE;
-	// y = game->py / TILE_SIZE;
-	if (1)
+	if (!wall_checker(game, game->px + (TILE_SIZE / 2), game->py + (TILE_SIZE / 2)))
 	{
-		draw_player(game, game->px, game->py, 0xffffff);
-		game->py += 5;
-		// game->map[game->py][game->px] = 'P';
-		// game->map[game->py - 1][game->px] = '0';
-		// render_map(game);
+		game->py += SPEED;
+		render_map(game);
 		draw_player(game, game->px, game->py, PLAYER_COLOR);
 	}
 }
 
 void	to_right(t_game *game)
 {
-	// int x;
-	// int y;
-
-	// x = game->px / TILE_SIZE;
-	// y = game->py / TILE_SIZE;
-	if (1)
+	if (!wall_checker(game, game->px + (TILE_SIZE / 2), game->py + (TILE_SIZE / 2)))
 	{
-		draw_player(game, game->px, game->py, 0xffffff);
-		game->px += 5;
-		// game->map[game->py][game->px] = 'P';
-		// game->map[game->py][game->px - 1] = '0';
-		// render_map(game);
+		game->px += SPEED;
+		render_map(game);
 		draw_player(game, game->px, game->py, PLAYER_COLOR);
 	}
 }
 
 void	to_left(t_game *game)
 {
-	// int x;
-	// int y;
-
-	// x = game->px / TILE_SIZE;
-	// y = game->py / TILE_SIZE;
-	if (1)
+	if (!wall_checker(game, game->px - SPEED, game->py))
 	{
-		draw_player(game, game->px, game->py, 0xffffff);
-		game->px -= 5;
-		// game->map[game->py][game->px] = 'P';
-		// game->map[game->py][game->px + 1] = '0';
-		// render_map(game);
+		game->px -= SPEED;
+		render_map(game);
 		draw_player(game, game->px, game->py, PLAYER_COLOR);
 	}
 }
@@ -142,9 +126,9 @@ int	ft_key_hook(int key_code, t_game *game)
 	if (key_code == 'a')
 		to_left(game);
 	// if (key_code == 65361)
-	// 	to_left(game);
+	// 	turn_left(game);
 	// if (key_code == 65363)
-	// 	to_left(game);
+	// 	turn_right(game);
 	return (1);
 }
 
