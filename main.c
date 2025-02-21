@@ -55,6 +55,7 @@ void	render_map(t_game *game)
 	int i;
 	int j = -1;
 
+
 	while(game->map && game->map[++j])
 	{
 		i = -1;
@@ -75,9 +76,16 @@ void	render_map(t_game *game)
 
 void	go_up(t_game *game)
 {
-	if (!wall_checker(game, game->px, game->py - SPEED))
+	double	x;
+	double	y;
+
+	x = game->px + (TILE_SIZE / 4);
+	y = game->py + (TILE_SIZE / 4) - SPEED;
+	if (!wall_checker(game, x, y))
 	{
-		game->py -= SPEED;
+		game->px -= game->pdx;
+		game->py -= game->pdy;
+		// game->py -= SPEED;
 		render_map(game);
 		draw_player(game, game->px, game->py, PLAYER_COLOR);
 	}
@@ -85,9 +93,16 @@ void	go_up(t_game *game)
 
 void	go_down(t_game *game)
 {
-	if (!wall_checker(game, game->px + (TILE_SIZE / 2), game->py + (TILE_SIZE / 2)))
+	double	x;
+	double	y;
+
+	x = game->px + (TILE_SIZE / 4);
+	y = game->py + (TILE_SIZE / 4) + SPEED;
+	if (!wall_checker(game, x, y))
 	{
-		game->py += SPEED;
+		game->px += game->pdx;
+		game->py += game->pdy;
+		// game->py += SPEED;
 		render_map(game);
 		draw_player(game, game->px, game->py, PLAYER_COLOR);
 	}
@@ -95,8 +110,18 @@ void	go_down(t_game *game)
 
 void	to_right(t_game *game)
 {
-	if (!wall_checker(game, game->px + (TILE_SIZE / 2), game->py + (TILE_SIZE / 2)))
+	double	x;
+	double	y;
+
+	x = game->px + (TILE_SIZE / 4) + SPEED;
+	y = game->py + (TILE_SIZE / 4);
+	if (!wall_checker(game, x, y))
 	{
+		game->pa += 0.1;
+		if(game->pa > 2 * PI)
+			game->pa -= 2 * PI;
+		game->pdx = cos(game->pa * SPEED);
+		game->pdx = sin(game->pa * SPEED);
 		game->px += SPEED;
 		render_map(game);
 		draw_player(game, game->px, game->py, PLAYER_COLOR);
@@ -105,8 +130,18 @@ void	to_right(t_game *game)
 
 void	to_left(t_game *game)
 {
-	if (!wall_checker(game, game->px - SPEED, game->py))
+	double	x;
+	double	y;
+
+	x = game->px + (TILE_SIZE / 4) - SPEED;
+	y = game->py + (TILE_SIZE / 4);
+	if (!wall_checker(game, x, y))
 	{
+		game->pa -= 0.1;
+		if(game->pa < 0)
+			game->pa += 2 * PI;
+		game->pdx = cos(game->pa * SPEED);
+		game->pdx = sin(game->pa * SPEED);
 		game->px -= SPEED;
 		render_map(game);
 		draw_player(game, game->px, game->py, PLAYER_COLOR);

@@ -14,10 +14,10 @@
 # define BUFFER_SIZE 42
 # define WIND_W 1280
 # define WIND_H 720
-# define SPEED 1
-# define M_PI 3.14159265358979323846
+# define SPEED 5
+# define PI 3.14159265358979323846
 # define TILE_SIZE 50
-# define PLAYER_COLOR 0x48db09
+# define PLAYER_COLOR 0x00000000
 
 typedef struct s_game
 {
@@ -34,6 +34,9 @@ typedef struct s_game
 	char	pv;
 	int		px;
 	int		py;
+	double	pdx;
+	double	pdy;
+	double	pa;
 }			t_game;
 
 // parsing
