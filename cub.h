@@ -17,7 +17,27 @@
 # define SPEED 5
 # define PI 3.14159265358979323846
 # define TILE_SIZE 50
-# define PLAYER_COLOR 0x00000000
+# define BLACK 0x00000000
+# define WHITE 0xffffff
+# define GREEN 0x14f70d
+# define CEILLING 0x0010b5
+# define WALL_COLOR 0x00ffec
+# define wall_COLOR 0xe20df7
+# define FOV 60
+# define ANG_STEP 0.2
+# define WALL_H 70
+
+typedef struct s_img
+{
+	void	*img_ptr;
+	char	*img_addr;
+	int		height;
+	int		width;
+	int		bpp;
+	int		size_line;
+	int		endian;
+	void	*win;
+}	t_img;
 
 typedef struct s_game
 {
@@ -32,14 +52,13 @@ typedef struct s_game
 	int		*ceiling;
 	char	*save;
 	char	pv;
+	double	pa;
 	int		px;
 	int		py;
-	double	pdx;
-	double	pdy;
-	double	pa;
+	char	flag;
+	t_img	image;
 }			t_game;
 
-// parsing
 size_t			ftstrlen(const char *s);
 char			*ftstrdup(const char *s1);
 char			*my_strjoin(char *s1, char const *s2);
@@ -64,4 +83,10 @@ t_game			*parsing(char *arg);
 void			ft_free(t_game *game);
 bool			parse_map(t_game *game);
 
+
+t_img   create_img(t_game *game, int height, int width);
+void    my_put_pixel(t_img image, int x, int y, int color);
+void    draw_square(t_img image, int x, int y, int color);
+void    draw_player(t_img image, int x, int y, int color);
+void    fill_map(t_img image, int ceilling, int floor);
 #endif

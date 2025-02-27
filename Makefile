@@ -11,6 +11,7 @@ SRC = main.c \
 	  parsing1.c \
 	  parsing2.c \
 	  parsing3.c \
+	  pixel.c\
 
 OBJ = $(SRC:.c=.o)
 LIBFT = libft/libft.a
