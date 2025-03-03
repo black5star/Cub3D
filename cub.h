@@ -14,18 +14,20 @@
 # define BUFFER_SIZE 42
 # define WIND_W 1280
 # define WIND_H 720
-# define SPEED 5
+# define SPEED 3
 # define PI 3.14159265358979323846
-# define TILE_SIZE 50
+# define TILE_SIZE 16
 # define BLACK 0x00000000
 # define WHITE 0xffffff
+# define RED 0xff0000
+# define YELLOW 0xfbff00
 # define GREEN 0x14f70d
 # define CEILLING 0x0010b5
 # define WALL_COLOR 0x00ffec
 # define wall_COLOR 0xe20df7
 # define FOV 60
-# define ANG_STEP 0.2
-# define WALL_H 70
+# define ANG_STEP 0.047
+# define WALL_H 24
 
 typedef struct s_img
 {
@@ -51,6 +53,7 @@ typedef struct s_game
 	int		*floor;
 	int		*ceiling;
 	char	*save;
+	char	*key;
 	char	pv;
 	double	pa;
 	int		px;
@@ -89,4 +92,11 @@ void    my_put_pixel(t_img image, int x, int y, int color);
 void    draw_square(t_img image, int x, int y, int color);
 void    draw_player(t_img image, int x, int y, int color);
 void    fill_map(t_img image, int ceilling, int floor);
+
 #endif
+
+
+
+
+
+// https://www.youtube.com/shorts/k07oBHCrJzE
