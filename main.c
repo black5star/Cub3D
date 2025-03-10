@@ -28,23 +28,23 @@ int	wall_checker(t_game *game, int x, int y)
 }
 void	detect_direction(t_game *game, int x, int y, double ray)
 {
-	if ((ray <= PI / 2) && wall_checker(game, x, y + 1))
+	if ((ray < PI / 2 || ray >= 2 * PI) && wall_checker(game, x, y + 1))
 		game->flag = 'E';
-	if ((ray <= PI / 2) && wall_checker(game, x - 1, y))
-		game->flag = 'N';
+	if ((ray <= PI / 2 || ray > 2 * PI) && wall_checker(game, x - 1, y))
+		game->flag = 'S';
 	if ((ray <= PI && ray > PI / 2) && (wall_checker(game, x, y + 1)
 		|| !wall_checker(game, x + 1, y)))
 		game->flag = 'W';
-	if ((ray <= PI && ray > PI / 2) && wall_checker(game, x + 1, y))
-		game->flag = 'N';
+	if ((ray < PI && ray >= PI / 2) && wall_checker(game, x + 1, y))
+		game->flag = 'S';
 	if ((ray > PI && ray <= 3 * PI / 2) && wall_checker(game, x, y - 1))
 		game->flag = 'W';
 	if ((ray > PI && ray <= 3 * PI / 2) && wall_checker(game, x + 1, y))
-		game->flag = 'S';
-	if ((ray > 3 * PI / 2) && wall_checker(game, x, y - 1))
+		game->flag = 'N';
+	if ((ray > (3 * PI / 2) || ray <= 0) && wall_checker(game, x, y - 1))
 		game->flag = 'E';
-	if ((ray > 3 * PI / 2) && wall_checker(game, x - 1, y))
-		game->flag = 'S';
+	if ((ray >= (3 * PI / 2) || ray < 0) && wall_checker(game, x - 1, y))
+		game->flag = 'N';
 }
 double	dist_calc(t_game *game, double x, double y, double ray)
 {
@@ -80,10 +80,14 @@ double	dda_line_drawing(t_game *game, double x, double y, double ray)
 		if (wall_checker(game, round(x), round(y)))
 		{
 			detect_direction(game, round(x), round(y), ray);
+			if (game->flag == 'E' || game->flag == 'W')
+				game->pos =  y;
+			if (game->flag == 'S' || game->flag == 'N')
+				game->pos =  x;
 			dx = dist_calc(game, x, y, ray);
 			break;
 		}
-		my_put_pixel(game->image, round(x), round(y), GREEN);
+		// my_put_pixel(game->image, round(x), round(y), GREEN);
 		x += x_inc;
 		y += y_inc;
 	}
@@ -109,51 +113,58 @@ int can_move(t_game *game, int x, int y)
 	}
 	return (0);
 }
-
-void	vertical_line(t_game *game, double dist, int nbr)
+unsigned int get_wall_color(t_game *game, int x, int y)
 {
-	double step;
+	if(game->flag == 'N')
+		return (get_pixel_img(game->wall_n, x, y));
+	if(game->flag == 'S')
+		return (get_pixel_img(game->wall_s, x, y));
+	if(game->flag == 'W')
+		return (get_pixel_img(game->wall_w, x, y));
+	if(game->flag == 'E')
+		return (get_pixel_img(game->wall_e, x, y));
+	return(0);
+}
+void	draw_textures(t_game *game, int x, double y, double wall_h)
+{
+	double	step;
+	double	h;
+	unsigned int color;
+	
+	game->pos = fmod(game->pos, TILE_SIZE);
+	step = TILE_SIZE / wall_h;
+	h = round((WIND_H / 2) - (wall_h / 2));
+	while (h <= round((WIND_H / 2) + (wall_h / 2)))
+	{
+		color = get_wall_color(game, game->pos, round(y));
+		my_put_pixel(game->image, x, h, color);
+		y += step;
+		h++;
+	}
+}
+void	vertical_line(t_game *game, int x, double dist)
+{
 	double wall_h;
-	double x;
-	double y;
 
-	step = (WIND_W * ANG_STEP) / FOV;
 	if(!dist)
 		wall_h = WIND_H;
 	else
 		wall_h = (WIND_H * WALL_H) / (dist);
-	x = step * nbr;
-	while (step >= 0)
-	{
-		y = round((WIND_H / 2) - (wall_h / 2));
-		while (y <= round((WIND_H / 2) + (wall_h / 2)))
-		{
-			if(game->flag == 'S' || game->flag == 'N')
-				my_put_pixel(game->image, round(x), round(y), wall_COLOR);
-			else
-				my_put_pixel(game->image, round(x), round(y), WALL_COLOR);
-			y++;
-		}
-		step--;
-		x++;
-	}
+	draw_textures(game, x, 0, wall_h);
 }
 void	ray_cast(t_game *game, int x, int y, double ray)
 {
-	int		nbr;
 	double	dist;
 	double	i;
 	double	angle;
 
 	i = 0;
 	angle = ray - (dgr_to_rad(FOV / 2));
-	nbr = 0;
-	while (i <= FOV)
+	while (i <= 1280)
 	{
 		dist = dda_line_drawing(game, x, y, angle);
-		vertical_line(game, dist, nbr);
-		nbr++;
-		i +=ANG_STEP;
+		vertical_line(game, i, dist);
+		i++;;
 		angle += dgr_to_rad(ANG_STEP);
 	}
 }
@@ -168,15 +179,15 @@ void	render_map(t_game *game)
 		i = -1;
 		while(game->map[j][++i])
 		{
-			if(game->map[j][i] == '1')
-				draw_square(game->image, i * TILE_SIZE, j * TILE_SIZE, RED);
+			// if(game->map[j][i] == '1')
+			// 	draw_square(game->image, i * TILE_SIZE, j * TILE_SIZE, RED);
 			// else
 			// 	draw_square(game->image, i * TILE_SIZE, j * TILE_SIZE, WHITE);
 			if (game->map[j][i] == game->pv)
 				game->map[j][i] = '0';
 		}
 	}
-	draw_player(game->image, game->px, game->py, BLACK);
+	// draw_player(game->image, game->px, game->py, BLACK);
 }
 
 void	go_up(t_game *game)
@@ -310,9 +321,18 @@ void	init_image(t_game *game)
 		game->pa = PI;
 	game->key = ft_calloc(150, sizeof(char *));
 	game->image = create_img(game, WIND_W, WIND_H);
+	game->wall_e = create_img(game, TILE_SIZE, TILE_SIZE);
+	game->wall_n = create_img(game, TILE_SIZE, TILE_SIZE);
+	game->wall_s = create_img(game, TILE_SIZE, TILE_SIZE);
+	game->wall_w = create_img(game, TILE_SIZE, TILE_SIZE);
+	game->wall_e = new_file_img(game->east, game);
+	game->wall_n = new_file_img(game->north, game);
+	game->wall_s = new_file_img(game->south, game);
+	game->wall_w = new_file_img(game->west, game);
 	render_3d(game);
 	mlx_put_image_to_window(game->mlx, game->win, game->image.img_ptr, 0, 0);
 }
+
 int	main(int ac, char **av)
 {
 	t_game	*game;

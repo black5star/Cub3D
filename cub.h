@@ -16,7 +16,7 @@
 # define WIND_H 720
 # define SPEED 3
 # define PI 3.14159265358979323846
-# define TILE_SIZE 16
+# define TILE_SIZE 50
 # define BLACK 0x00000000
 # define WHITE 0xffffff
 # define RED 0xff0000
@@ -27,7 +27,7 @@
 # define wall_COLOR 0xe20df7
 # define FOV 60
 # define ANG_STEP 0.047
-# define WALL_H 24
+# define WALL_H 75
 
 typedef struct s_img
 {
@@ -59,7 +59,12 @@ typedef struct s_game
 	int		px;
 	int		py;
 	char	flag;
+	int		pos;
 	t_img	image;
+	t_img	wall_s;
+	t_img	wall_n;
+	t_img	wall_w;
+	t_img	wall_e;
 }			t_game;
 
 size_t			ftstrlen(const char *s);
@@ -92,7 +97,8 @@ void    my_put_pixel(t_img image, int x, int y, int color);
 void    draw_square(t_img image, int x, int y, int color);
 void    draw_player(t_img image, int x, int y, int color);
 void    fill_map(t_img image, int ceilling, int floor);
-
+t_img	new_file_img(char *path, t_game *game);
+unsigned int	get_pixel_img(t_img img, int x, int y);
 #endif
 
 
