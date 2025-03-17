@@ -38,60 +38,6 @@ void    my_put_pixel(t_img image, int x, int y, int color)
     }
 }
 
-void    draw_square(t_img image, int x, int y, int color)
-{
-    int i;
-    int j;
-
-    j = -1;
-    while (++j < TILE_SIZE)
-    {
-        i = -1;
-        while (++i < TILE_SIZE)
-        {
-            my_put_pixel(image, x + i, y + j, color);
-        }
-    }
-}
-void    fill_map(t_img image, int ceiling, int floor)
-{
-    int i;
-    int j;
-
-    j = -1;
-    while (++j <= (WIND_H / 2))
-    {
-        i = -1;
-        while (++i <= WIND_W)
-        {
-            my_put_pixel(image, i, j, ceiling);
-        }
-    }
-    while (++j <= WIND_H)
-    {
-        i = -1;
-        while (++i <= WIND_W)
-        {
-            my_put_pixel(image, i, j, floor);
-        }
-    }
-}
-
-void    draw_player(t_img image, int x, int y, int color)
-{
-    int i;
-    int j;
-
-    j = -1;
-    while (++j < (TILE_SIZE / 2))
-    {
-        i = -1;
-        while (++i < (TILE_SIZE / 2))
-        {
-            my_put_pixel(image, x + i, y + j, color);
-        }
-    }
-}
 unsigned int	get_pixel_img(t_img img, int x, int y)
 {
 	if (x < 0)

@@ -1,8 +1,8 @@
 #include "cub.h"
 
-double dgr_to_rad(double degrees) 
+double	dgr_to_rad(double degrees) 
 {
-    return (degrees * (PI / 180.0));
+	return (degrees * (PI / 180.0));
 }
 
 int	ft_exit(t_game *game)
@@ -55,23 +55,22 @@ void	detect_direction(t_game *game, int x, int y, double ray)
 		game->flag = 'N';
 }
 
-
 double    dist_calc(t_game *game, double x, double y, double ray)
 {
-    double    dx;
-    double    dy;
-    double    dist;
-    double    beta;
+	double    dx;
+	double    dy;
+	double    dist;
+	double    beta;
 
-    dx = x - game->px;
-    dy = y - game->py;
-    beta = ray - game->pa;
-    while (beta > PI)
-        beta -= 2 * PI;
-    while (beta < -PI)
-        beta += 2 * PI;
-    dist = (dx * cos(game->pa) + dy * sin(game->pa));
-    return (dist);
+	dx = x - game->px;
+	dy = y - game->py;
+	beta = ray - game->pa;
+	while (beta > PI)
+		beta -= 2 * PI;
+	while (beta < -PI)
+		beta += 2 * PI;
+	dist = (dx * cos(game->pa) + dy * sin(game->pa));
+	return (dist);
 }
 double	dda_line_drawing(t_game *game, double x, double y, double ray)
 {
@@ -84,9 +83,9 @@ double	dda_line_drawing(t_game *game, double x, double y, double ray)
 	dx = cos(ray);
 	dy = sin(ray);
 	if (fabs(dx) > fabs(dy))
-        step = fabs(dx);
+		step = fabs(dx);
 	else
-        step = fabs(dy);
+		step = fabs(dy);
 	if (!step)
 		step = 0.1;
 	x_inc = dx / step;
@@ -101,7 +100,7 @@ double	dda_line_drawing(t_game *game, double x, double y, double ray)
 			if (game->flag == 'S' || game->flag == 'N')
 				game->pos =  x;
 			dx = dist_calc(game, x, y, ray);
-			break;
+			break ;
 		}
 		x += x_inc;
 		y += y_inc;
@@ -114,11 +113,11 @@ int can_move(t_game *game, int x, int y)
 	int i;
 	int j;
 
-	j = y;
-	while(j <= (y + (TILE_SIZE / 2)))
+	j = y - (TILE_SIZE / 4);
+	while (j <= (y + (TILE_SIZE / 4)))
 	{
-		i = x;
-		while(i <= (x + (TILE_SIZE / 2)))
+		i = x - (TILE_SIZE / 4);
+		while (i <= (x + (TILE_SIZE / 4)))
 		{
 			if (wall_checker(game, i, j))
 				return (1);
@@ -130,15 +129,15 @@ int can_move(t_game *game, int x, int y)
 }
 unsigned int get_wall_color(t_game *game, int x, int y)
 {
-	if(game->flag == 'N')
+	if (game->flag == 'N')
 		return (get_pixel_img(game->wall_n, x, y));
-	if(game->flag == 'S')
+	if (game->flag == 'S')
 		return (get_pixel_img(game->wall_s, x, y));
-	if(game->flag == 'W')
+	if (game->flag == 'W')
 		return (get_pixel_img(game->wall_w, x, y));
-	if(game->flag == 'E')
+	if (game->flag == 'E')
 		return (get_pixel_img(game->wall_e, x, y));
-	return(0);
+	return (0);
 }
 void	draw_textures(t_game *game, int x, double y, double wall_h)
 {
@@ -152,7 +151,7 @@ void	draw_textures(t_game *game, int x, double y, double wall_h)
 	step = TILE_SIZE / wall_h;
 	h = round((WIND_H / 2) - (wall_h / 2));
 	while (++i < h)
-        my_put_pixel(game->image, x, i, game->c_color);
+		my_put_pixel(game->image, x, i, game->c_color);
 	while (h <= round((WIND_H / 2) + (wall_h / 2)))
 	{
 		color = get_wall_color(game, game->pos, round(y));
@@ -161,8 +160,8 @@ void	draw_textures(t_game *game, int x, double y, double wall_h)
 		h++;
 	}
 	h--;
-	while(h++ < WIND_H)
-        my_put_pixel(game->image, x, h, game->f_color);
+	while (h++ < WIND_H)
+		my_put_pixel(game->image, x, h, game->f_color);
 }
 
 void	vertical_line(t_game *game, int x, double dist)
@@ -170,9 +169,7 @@ void	vertical_line(t_game *game, int x, double dist)
 	double wall_h;
 
 	if (dist <= 0)
-	{
 		wall_h = (WIND_H * WALL_H) / 0.02;
-	}
 	else
 		wall_h = (WIND_H * WALL_H) / (dist);
 	draw_textures(game, x, 0, wall_h);
@@ -180,8 +177,8 @@ void	vertical_line(t_game *game, int x, double dist)
 void	ray_cast(t_game *game, int x, int y, double ray)
 {
 	double	dist;
-	double	i;
 	double	angle;
+	int		i;
 
 	i = 0;
 	angle = ray - (dgr_to_rad(FOV / 2));
@@ -191,22 +188,6 @@ void	ray_cast(t_game *game, int x, int y, double ray)
 		vertical_line(game, i, dist);
 		i++;
 		angle += dgr_to_rad(ANG_STEP);
-	}
-}
-
-void	render_map(t_game *game)
-{
-	int i;
-	int j = -1;
-
-	while(game->map && game->map[++j])
-	{
-		i = -1;
-		while(game->map[j][++i])
-		{
-			if (game->map[j][i] == game->pv)
-				game->map[j][i] = '0';
-		}
 	}
 }
 
@@ -323,7 +304,7 @@ int	render_3d(t_game *game)
 	ft_key_hook(game);
 	mlx_destroy_image(game->mlx, game->image.img_ptr);
 	game->image = create_img(game, WIND_W, WIND_H);
-	ray_cast(game, game->px + (TILE_SIZE / 4), game->py + (TILE_SIZE / 4), game->pa);
+	ray_cast(game, game->px, game->py, game->pa);
 	mlx_put_image_to_window(game->mlx, game->win, game->image.img_ptr, 0, 0);
 	return (0);
 }
@@ -369,7 +350,6 @@ int	main(int ac, char **av)
 	mlx_hook(game->win, 17, 0, ft_exit, game);
 	mlx_hook(game->win, 02, (1L << 0), key_press, game);
 	mlx_hook(game->win, 03, (1L << 1), key_release, game);
-	render_map(game);
 	mlx_loop_hook(game->mlx, render_3d, game);
 	mlx_loop(game->mlx);
 	ft_free(game);

@@ -26,10 +26,8 @@ void	ft_free(t_game *game)
 	free(game);
 }
 
-int	fillemptyspace(t_game *game, int j, char *s)
+int	fillemptyspace(t_game *game, int j, char *s, int i)
 {
-	int		i;
-
 	while (game->map && game->map[++j])
 	{
 		i = -1;
@@ -44,8 +42,9 @@ int	fillemptyspace(t_game *game, int j, char *s)
 					&& !game->px && !game->py)
 				{
 					game->pv = s[i];
-					game->px = i * TILE_SIZE + (TILE_SIZE / 4);
-					game->py = j * TILE_SIZE + (TILE_SIZE / 4);
+					s[i] = '0';
+					game->px = i * TILE_SIZE + (TILE_SIZE / 2);
+					game->py = j * TILE_SIZE + (TILE_SIZE / 2);
 				}
 				else
 					return (err("Error: invalid map\n"), false);
@@ -106,7 +105,7 @@ bool	parse_map(t_game *game)
 {
 	int	len;
 
-	len = fillemptyspace(game, -1, NULL);
+	len = fillemptyspace(game, -1, NULL, 0);
 	if (!len)
 		return (false);
 	if (!closedmap(game, len))

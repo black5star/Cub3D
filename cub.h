@@ -88,15 +88,7 @@ bool			parse_map(t_game *game);
 
 t_img   create_img(t_game *game, int height, int width);
 void    my_put_pixel(t_img image, int x, int y, int color);
-void    draw_square(t_img image, int x, int y, int color);
-void    draw_player(t_img image, int x, int y, int color);
-void    fill_map(t_img image, int ceilling, int floor);
 t_img	new_file_img(char *path, t_game *game);
 unsigned int	get_pixel_img(t_img img, int x, int y);
+
 #endif
-
-
-
-
-
-// https://www.youtube.com/shorts/k07oBHCrJzE
