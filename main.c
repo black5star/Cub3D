@@ -321,10 +321,6 @@ void	init_image(t_game *game)
 	color_convertor(game);
 	game->key = ft_calloc(150, sizeof(char *));
 	game->image = create_img(game, WIND_W, WIND_H);
-	game->wall_e = create_img(game, TILE_SIZE, TILE_SIZE);
-	game->wall_n = create_img(game, TILE_SIZE, TILE_SIZE);
-	game->wall_s = create_img(game, TILE_SIZE, TILE_SIZE);
-	game->wall_w = create_img(game, TILE_SIZE, TILE_SIZE);
 	game->wall_e = new_file_img(game->east, game);
 	game->wall_n = new_file_img(game->north, game);
 	game->wall_s = new_file_img(game->south, game);
