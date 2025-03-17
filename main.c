@@ -323,7 +323,6 @@ int	render_3d(t_game *game)
 	ft_key_hook(game);
 	mlx_destroy_image(game->mlx, game->image.img_ptr);
 	game->image = create_img(game, WIND_W, WIND_H);
-	// fill_map(game->image, CEILLING, BLACK);
 	ray_cast(game, game->px + (TILE_SIZE / 4), game->py + (TILE_SIZE / 4), game->pa);
 	mlx_put_image_to_window(game->mlx, game->win, game->image.img_ptr, 0, 0);
 	return (0);
