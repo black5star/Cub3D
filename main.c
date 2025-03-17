@@ -43,22 +43,40 @@ void	detect_direction(t_game *game, int x, int y, double ray)
 		game->flag = 'N';
 	if ((ray > (3 * PI / 2) || ray <= 0) && wall_checker(game, x, y - 1))
 		game->flag = 'E';
-	if ((ray >= (3 * PI / 2) || ray < 0) && wall_checker(game, x - 1, y))
+	if ((ray >= (3 * PI / 2) || ray < 0) && wall_checker(game, x - 1, y)
+		&& game->flag != 'S')
 		game->flag = 'N';
 }
-double	dist_calc(t_game *game, double x, double y, double ray)
-{
-	double dx;
-    double dy;
-    double dist;
+// double	dist_calc(t_game *game, double x, double y, double ray)
+// {
+// 	double dx;
+//     double dy;
+//     double dist;
 
-    dx = fabs(x - game->px);
-    dy = fabs(y - game->py);
-    dist = sqrt(dx * dx + dy * dy);
-    dist *= cos(ray - game->pa);
+//     dx = fabs(x - game->px);
+//     dy = fabs(y - game->py);
+//     dist = sqrt(dx * dx + dy * dy);
+//     dist *= cos(ray - game->pa);
+//     return (dist);
+// }
+
+double    dist_calc(t_game *game, double x, double y, double ray)
+{
+    double    dx;
+    double    dy;
+    double    dist;
+    double    beta;
+
+    dx = x - game->px;
+    dy = y - game->py;
+    beta = ray - game->pa;
+    while (beta > PI)
+        beta -= 2 * PI;
+    while (beta < -PI)
+        beta += 2 * PI;
+    dist = (dx * cos(game->pa) + dy * sin(game->pa));
     return (dist);
 }
-
 double	dda_line_drawing(t_game *game, double x, double y, double ray)
 {
 	double x_inc;
@@ -75,7 +93,7 @@ double	dda_line_drawing(t_game *game, double x, double y, double ray)
         step = fabs(dy);
 	x_inc = dx / step;
 	y_inc = dy / step;
-	while (x >= 0 && x <= WIND_W && y >= 0 && y <= WIND_H)
+	while (x >= 0 && y >= 0)
 	{
 		if (wall_checker(game, round(x), round(y)))
 		{
@@ -146,8 +164,14 @@ void	vertical_line(t_game *game, int x, double dist)
 {
 	double wall_h;
 
-	if(!dist)
-		wall_h = WIND_H;
+	// if(dist < 2)
+	// 	wall_h = WIND_H;
+	// else
+	if (dist <= 0)
+	{
+		wall_h = (WIND_H * WALL_H) / 0.02;
+		// dist = 0.03;
+	}
 	else
 		wall_h = (WIND_H * WALL_H) / (dist);
 	draw_textures(game, x, 0, wall_h);
