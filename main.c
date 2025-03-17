@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: het-taja <het-taja@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/17 16:48:38 by het-taja          #+#    #+#             */
+/*   Updated: 2025/03/17 17:09:58 by het-taja         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 
 int	ft_exit(t_game *game)
@@ -63,7 +75,7 @@ int	main(int ac, char **av)
 	if (!parse_map(game))
 		return (ft_free(game), 1);
 	game->mlx = mlx_init();
-	game->win = mlx_new_window(game->mlx, WIND_W, WIND_H, "Black Star");
+	game->win = mlx_new_window(game->mlx, WIND_W, WIND_H, "Cub3d");
 	init_image(game);
 	mlx_hook(game->win, 17, 0, ft_exit, game);
 	mlx_hook(game->win, 02, (1L << 0), key_press, game);

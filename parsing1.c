@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parsing1.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: het-taja <het-taja@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/17 16:48:53 by het-taja          #+#    #+#             */
+/*   Updated: 2025/03/17 17:01:30 by het-taja         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 
 bool	space_checker(char c)
@@ -78,6 +90,7 @@ bool	path_checker(t_game *game, char *var, char *line, int i)
 		|| access(path, F_OK | R_OK) == -1)
 	{
 		err("ERROR : invalid path (.xpm).\n");
+		free(path);
 		return (false);
 	}
 	if (!ft_strncmp(var, "NO", 2) && save_checker(game, 1, 'a'))
