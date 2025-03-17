@@ -10,6 +10,13 @@ int	ft_exit(t_game *game)
 	ft_free(game);
 	exit(0);
 }
+void	color_convertor(t_game *game)
+{
+	game->c_color = game->ceiling[0] << 16 | game->ceiling[1] << 8
+		| game->ceiling[2];
+	game->f_color = game->floor[0] << 16 | game->floor[1] << 8
+		| game->floor[2];
+}
 int	wall_checker(t_game *game, int x, int y)
 {
 	int	i;
@@ -47,18 +54,7 @@ void	detect_direction(t_game *game, int x, int y, double ray)
 		&& game->flag != 'S')
 		game->flag = 'N';
 }
-// double	dist_calc(t_game *game, double x, double y, double ray)
-// {
-// 	double dx;
-//     double dy;
-//     double dist;
 
-//     dx = fabs(x - game->px);
-//     dy = fabs(y - game->py);
-//     dist = sqrt(dx * dx + dy * dy);
-//     dist *= cos(ray - game->pa);
-//     return (dist);
-// }
 
 double    dist_calc(t_game *game, double x, double y, double ray)
 {
@@ -91,6 +87,8 @@ double	dda_line_drawing(t_game *game, double x, double y, double ray)
         step = fabs(dx);
 	else
         step = fabs(dy);
+	if (!step)
+		step = 0.1;
 	x_inc = dx / step;
 	y_inc = dy / step;
 	while (x >= 0 && y >= 0)
@@ -105,7 +103,6 @@ double	dda_line_drawing(t_game *game, double x, double y, double ray)
 			dx = dist_calc(game, x, y, ray);
 			break;
 		}
-		// my_put_pixel(game->image, round(x), round(y), GREEN);
 		x += x_inc;
 		y += y_inc;
 	}
@@ -148,10 +145,14 @@ void	draw_textures(t_game *game, int x, double y, double wall_h)
 	double	step;
 	double	h;
 	unsigned int color;
+	int i;
 	
+	i = -1;
 	game->pos = fmod(game->pos, TILE_SIZE);
 	step = TILE_SIZE / wall_h;
 	h = round((WIND_H / 2) - (wall_h / 2));
+	while (++i < h)
+        my_put_pixel(game->image, x, i, game->c_color);
 	while (h <= round((WIND_H / 2) + (wall_h / 2)))
 	{
 		color = get_wall_color(game, game->pos, round(y));
@@ -159,18 +160,18 @@ void	draw_textures(t_game *game, int x, double y, double wall_h)
 		y += step;
 		h++;
 	}
+	h--;
+	while(h++ < WIND_H)
+        my_put_pixel(game->image, x, h, game->f_color);
 }
+
 void	vertical_line(t_game *game, int x, double dist)
 {
 	double wall_h;
 
-	// if(dist < 2)
-	// 	wall_h = WIND_H;
-	// else
 	if (dist <= 0)
 	{
 		wall_h = (WIND_H * WALL_H) / 0.02;
-		// dist = 0.03;
 	}
 	else
 		wall_h = (WIND_H * WALL_H) / (dist);
@@ -188,7 +189,7 @@ void	ray_cast(t_game *game, int x, int y, double ray)
 	{
 		dist = dda_line_drawing(game, x, y, angle);
 		vertical_line(game, i, dist);
-		i++;;
+		i++;
 		angle += dgr_to_rad(ANG_STEP);
 	}
 }
@@ -203,15 +204,10 @@ void	render_map(t_game *game)
 		i = -1;
 		while(game->map[j][++i])
 		{
-			// if(game->map[j][i] == '1')
-			// 	draw_square(game->image, i * TILE_SIZE, j * TILE_SIZE, RED);
-			// else
-			// 	draw_square(game->image, i * TILE_SIZE, j * TILE_SIZE, WHITE);
 			if (game->map[j][i] == game->pv)
 				game->map[j][i] = '0';
 		}
 	}
-	// draw_player(game->image, game->px, game->py, BLACK);
 }
 
 void	go_up(t_game *game)
@@ -327,9 +323,8 @@ int	render_3d(t_game *game)
 	ft_key_hook(game);
 	mlx_destroy_image(game->mlx, game->image.img_ptr);
 	game->image = create_img(game, WIND_W, WIND_H);
-	fill_map(game->image, CEILLING, BLACK);
+	// fill_map(game->image, CEILLING, BLACK);
 	ray_cast(game, game->px + (TILE_SIZE / 4), game->py + (TILE_SIZE / 4), game->pa);
-	render_map(game);
 	mlx_put_image_to_window(game->mlx, game->win, game->image.img_ptr, 0, 0);
 	return (0);
 }
@@ -343,6 +338,7 @@ void	init_image(t_game *game)
 		game->pa = 0;
 	else if (game->pv == 'W')
 		game->pa = PI;
+	color_convertor(game);
 	game->key = ft_calloc(150, sizeof(char *));
 	game->image = create_img(game, WIND_W, WIND_H);
 	game->wall_e = create_img(game, TILE_SIZE, TILE_SIZE);
@@ -374,6 +370,7 @@ int	main(int ac, char **av)
 	mlx_hook(game->win, 17, 0, ft_exit, game);
 	mlx_hook(game->win, 02, (1L << 0), key_press, game);
 	mlx_hook(game->win, 03, (1L << 1), key_release, game);
+	render_map(game);
 	mlx_loop_hook(game->mlx, render_3d, game);
 	mlx_loop(game->mlx);
 	ft_free(game);

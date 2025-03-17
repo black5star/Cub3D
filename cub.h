@@ -16,7 +16,7 @@
 # define WIND_H 720
 # define SPEED 3
 # define PI 3.14159265358979323846
-# define TILE_SIZE 50
+# define TILE_SIZE 64
 # define BLACK 0x00000000
 # define WHITE 0xffffff
 # define RED 0xff0000
@@ -60,6 +60,8 @@ typedef struct s_game
 	int		py;
 	char	flag;
 	int		pos;
+	int		c_color;
+	int		f_color;
 	t_img	image;
 	t_img	wall_s;
 	t_img	wall_n;
