@@ -1,18 +1,5 @@
 #include "cub.h"
 
-void	destroy_all(t_game *game)
-{
-	mlx_destroy_image(game->mlx, game->image.img_ptr);
-	mlx_destroy_image(game->mlx, game->wall_e.img_ptr);
-	mlx_destroy_image(game->mlx, game->wall_n.img_ptr);
-	mlx_destroy_image(game->mlx, game->wall_s.img_ptr);
-	mlx_destroy_image(game->mlx, game->wall_w.img_ptr);
-	mlx_destroy_window(game->mlx, game->win);
-	free(game->key);
-	mlx_destroy_display(game->mlx);
-	free(game->mlx);
-}
-
 void	ft_free(t_game *game)
 {
 	int	i;
@@ -36,7 +23,6 @@ void	ft_free(t_game *game)
 				free(game->map[i++]);
 		free(game->map);
 	}
-	destroy_all(game);
 	free(game);
 }
 

@@ -1,304 +1,12 @@
 #include "cub.h"
 
-double	dgr_to_rad(double degrees) 
-{
-	return (degrees * (PI / 180.0));
-}
-
 int	ft_exit(t_game *game)
 {
+	destroy_all(game);
 	ft_free(game);
 	exit(0);
 }
-void	color_convertor(t_game *game)
-{
-	game->c_color = game->ceiling[0] << 16 | game->ceiling[1] << 8
-		| game->ceiling[2];
-	game->f_color = game->floor[0] << 16 | game->floor[1] << 8
-		| game->floor[2];
-}
-int	wall_checker(t_game *game, int x, int y)
-{
-	int	i;
-	int	j;
 
-	if (x <= 0 || y <= 0)
-		return (1);
-	i = x / TILE_SIZE;
-	j = y / TILE_SIZE;
-	if (game->map[j] && game->map[j][i])
-	{
-		if (game->map[j][i] == '1')
-			return (1);
-	}
-	return (0);
-}
-void	detect_direction(t_game *game, int x, int y, double ray)
-{
-	if ((ray < PI / 2 || ray >= 2 * PI) && wall_checker(game, x, y + 1))
-		game->flag = 'E';
-	if ((ray <= PI / 2 || ray > 2 * PI) && wall_checker(game, x - 1, y))
-		game->flag = 'S';
-	if ((ray <= PI && ray > PI / 2) && (wall_checker(game, x, y + 1)
-		|| !wall_checker(game, x + 1, y)))
-		game->flag = 'W';
-	if ((ray < PI && ray >= PI / 2) && wall_checker(game, x + 1, y))
-		game->flag = 'S';
-	if ((ray > PI && ray <= 3 * PI / 2) && wall_checker(game, x, y - 1))
-		game->flag = 'W';
-	if ((ray > PI && ray <= 3 * PI / 2) && wall_checker(game, x + 1, y))
-		game->flag = 'N';
-	if ((ray > (3 * PI / 2) || ray <= 0) && wall_checker(game, x, y - 1))
-		game->flag = 'E';
-	if ((ray >= (3 * PI / 2) || ray < 0) && wall_checker(game, x - 1, y)
-		&& game->flag != 'S')
-		game->flag = 'N';
-}
-
-double    dist_calc(t_game *game, double x, double y, double ray)
-{
-	double    dx;
-	double    dy;
-	double    dist;
-	double    beta;
-
-	dx = x - game->px;
-	dy = y - game->py;
-	beta = ray - game->pa;
-	while (beta > PI)
-		beta -= 2 * PI;
-	while (beta < -PI)
-		beta += 2 * PI;
-	dist = (dx * cos(game->pa) + dy * sin(game->pa));
-	return (dist);
-}
-double	dda_line_drawing(t_game *game, double x, double y, double ray)
-{
-	double x_inc;
-	double y_inc;
-	double dx;
-	double dy;
-	double step;
-
-	dx = cos(ray);
-	dy = sin(ray);
-	if (fabs(dx) > fabs(dy))
-		step = fabs(dx);
-	else
-		step = fabs(dy);
-	if (!step)
-		step = 0.1;
-	x_inc = dx / step;
-	y_inc = dy / step;
-	while (x >= 0 && y >= 0)
-	{
-		if (wall_checker(game, round(x), round(y)))
-		{
-			detect_direction(game, round(x), round(y), ray);
-			if (game->flag == 'E' || game->flag == 'W')
-				game->pos =  y;
-			if (game->flag == 'S' || game->flag == 'N')
-				game->pos =  x;
-			dx = dist_calc(game, x, y, ray);
-			break ;
-		}
-		x += x_inc;
-		y += y_inc;
-	}
-	return (dx);
-}
-
-int can_move(t_game *game, int x, int y)
-{
-	int i;
-	int j;
-
-	j = y - (TILE_SIZE / 4);
-	while (j <= (y + (TILE_SIZE / 4)))
-	{
-		i = x - (TILE_SIZE / 4);
-		while (i <= (x + (TILE_SIZE / 4)))
-		{
-			if (wall_checker(game, i, j))
-				return (1);
-			i++;
-		}
-		j++;
-	}
-	return (0);
-}
-unsigned int get_wall_color(t_game *game, int x, int y)
-{
-	if (game->flag == 'N')
-		return (get_pixel_img(game->wall_n, x, y));
-	if (game->flag == 'S')
-		return (get_pixel_img(game->wall_s, x, y));
-	if (game->flag == 'W')
-		return (get_pixel_img(game->wall_w, x, y));
-	if (game->flag == 'E')
-		return (get_pixel_img(game->wall_e, x, y));
-	return (0);
-}
-void	draw_textures(t_game *game, int x, double y, double wall_h)
-{
-	double	step;
-	double	h;
-	unsigned int color;
-	int i;
-	
-	i = -1;
-	game->pos = fmod(game->pos, TILE_SIZE);
-	step = TILE_SIZE / wall_h;
-	h = round((WIND_H / 2) - (wall_h / 2));
-	while (++i < h)
-		my_put_pixel(game->image, x, i, game->c_color);
-	while (h <= round((WIND_H / 2) + (wall_h / 2)))
-	{
-		color = get_wall_color(game, game->pos, round(y));
-		my_put_pixel(game->image, x, h, color);
-		y += step;
-		h++;
-	}
-	h--;
-	while (h++ < WIND_H)
-		my_put_pixel(game->image, x, h, game->f_color);
-}
-
-void	vertical_line(t_game *game, int x, double dist)
-{
-	double wall_h;
-
-	if (dist <= 0)
-		wall_h = (WIND_H * WALL_H) / 0.02;
-	else
-		wall_h = (WIND_H * WALL_H) / (dist);
-	draw_textures(game, x, 0, wall_h);
-}
-void	ray_cast(t_game *game, int x, int y, double ray)
-{
-	double	dist;
-	double	angle;
-	int		i;
-
-	i = 0;
-	angle = ray - (dgr_to_rad(FOV / 2));
-	while (i <= 1280)
-	{
-		dist = dda_line_drawing(game, x, y, angle);
-		vertical_line(game, i, dist);
-		i++;
-		angle += dgr_to_rad(ANG_STEP);
-	}
-}
-
-void	go_up(t_game *game)
-{
-	double	x;
-	double	y;
-
-	x = round(cos(game->pa) * SPEED);
-	y = round(sin(game->pa) * SPEED);
-	if (!can_move(game, game->px + x, game->py + y))
-	{
-		game->px += x;
-		game->py += y;
-	}
-}
-
-void	go_down(t_game *game)
-{
-	double	x;
-	double	y;
-
-	x = round(cos(game->pa) * SPEED);
-	y = round(sin(game->pa) * SPEED);
-	if (!can_move(game, game->px - x, game->py - y))
-	{
-		game->px -= x;
-		game->py -= y;
-	}
-}
-
-void	to_right(t_game *game)
-{
-	double	x;
-	double	y;
-
-	x = round(sin(game->pa) * SPEED);
-	y = round(cos(game->pa) * SPEED);
-	if (game->key[100] && !can_move(game, game->px - x, game->py + y))
-	{
-		game->px -= x;
-		game->py += y;
-	}
-}
-
-void	to_left(t_game *game)
-{
-	double	x;
-	double	y;
-
-	x = round(sin(game->pa) * SPEED);
-	y = round(cos(game->pa) * SPEED);
-	if (!can_move(game, game->px + x, game->py - y))
-	{
-		game->px += x;
-		game->py -= y;
-	}
-}
-
-void	turn_left(t_game *game)
-{
-	game->pa -= dgr_to_rad(ANG_STEP + SPEED);
-	if (game->pa <= 0)
-		game->pa += (2 * PI);
-}
-
-void	turn_right(t_game *game)
-{
-	game->pa += dgr_to_rad(ANG_STEP + SPEED);
-	if (game->pa >= (2 * PI))
-		game->pa -= (2 * PI);
-}
-
-void	ft_key_hook(t_game *game)
-{
-	if (game->key[131])
-		turn_left(game);
-	if (game->key[130])
-		turn_right(game);
-	if (game->key[119])
-		go_up(game);
-	if (game->key[115])
-		go_down(game);
-	if (game->key[100])
-		to_right(game);
-	if (game->key[97])
-		to_left(game);
-}
-int	key_press(int keycode, t_game *game)
-{
-	if (keycode == 65307)
-		exit(ft_exit(game));
-	if (keycode == 65363)
-		game->key[130] = 1;
-	if (keycode == 65361)
-		game->key[131] = 1;
-	if (keycode <= 127)
-		game->key[keycode] = 1;
-	return (0);
-}
-
-int	key_release(int keycode, t_game *game)
-{
-	if (keycode == 65363)
-		game->key[130] = 0;
-	if (keycode == 65361)
-		game->key[131] = 0;
-	if (keycode <= 127)
-		game->key[keycode] = 0;
-	return (0);
-}
 int	render_3d(t_game *game)
 {
 	ft_key_hook(game);
@@ -308,6 +16,7 @@ int	render_3d(t_game *game)
 	mlx_put_image_to_window(game->mlx, game->win, game->image.img_ptr, 0, 0);
 	return (0);
 }
+
 void	init_image(t_game *game)
 {
 	if (game->pv == 'S')
@@ -329,6 +38,19 @@ void	init_image(t_game *game)
 	mlx_put_image_to_window(game->mlx, game->win, game->image.img_ptr, 0, 0);
 }
 
+void	destroy_all(t_game *game)
+{
+	mlx_destroy_image(game->mlx, game->image.img_ptr);
+	mlx_destroy_image(game->mlx, game->wall_e.img_ptr);
+	mlx_destroy_image(game->mlx, game->wall_n.img_ptr);
+	mlx_destroy_image(game->mlx, game->wall_s.img_ptr);
+	mlx_destroy_image(game->mlx, game->wall_w.img_ptr);
+	mlx_destroy_window(game->mlx, game->win);
+	free(game->key);
+	mlx_destroy_display(game->mlx);
+	free(game->mlx);
+}
+
 int	main(int ac, char **av)
 {
 	t_game	*game;
@@ -348,6 +70,7 @@ int	main(int ac, char **av)
 	mlx_hook(game->win, 03, (1L << 1), key_release, game);
 	mlx_loop_hook(game->mlx, render_3d, game);
 	mlx_loop(game->mlx);
+	destroy_all(game);
 	ft_free(game);
 	return (0);
 }

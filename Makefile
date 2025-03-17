@@ -12,6 +12,10 @@ SRC = main.c \
 	  parsing2.c \
 	  parsing3.c \
 	  pixel.c\
+	  move.c\
+	  move2.c\
+	  ray_cast.c\
+	  texture.c\
 
 OBJ = $(SRC:.c=.o)
 LIBFT = libft/libft.a

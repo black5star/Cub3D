@@ -1,5 +1,5 @@
 #ifndef CUB_H
-#define CUB_H
+# define CUB_H
 
 # include <unistd.h>
 # include <stdlib.h>
@@ -10,7 +10,7 @@
 # include <stdbool.h>
 # include "./libft/libft.h"
 # include "./minilibx-linux/mlx.h"
- 
+
 # define BUFFER_SIZE 42
 # define WIND_W 1280
 # define WIND_H 720
@@ -84,11 +84,45 @@ bool			help2(char *line, int fd, t_game *game);
 t_game			*parsing(char *arg);
 void			ft_free(t_game *game);
 bool			parse_map(t_game *game);
+void			destroy_all(t_game *game);
 
+// pixel.c
+void			color_convertor(t_game *game);
+t_img			create_img(t_game *game, int height, int width);
+void			my_put_pixel(t_img image, int x, int y, int color);
+t_img			new_file_img(char *path, t_game *game);
+unsigned int		get_pixel_img(t_img img, int x, int y);
 
-t_img   create_img(t_game *game, int height, int width);
-void    my_put_pixel(t_img image, int x, int y, int color);
-t_img	new_file_img(char *path, t_game *game);
-unsigned int	get_pixel_img(t_img img, int x, int y);
+// move.c
+void			go_up(t_game *game);
+void			go_down(t_game *game);
+void			to_right(t_game *game);
+void			to_left(t_game *game);
+void			ft_key_hook(t_game *game);
+
+// move2.c
+int			wall_checker(t_game *game, int x, int y);
+int			can_move(t_game *game, int x, int y);
+int			key_press(int keycode, t_game *game);
+int			key_release(int keycode, t_game *game);
+
+// ray_cast.c
+double			dgr_to_rad(double degrees);
+double			dist_calc(t_game *game, double x, double y, double ray);
+double			complete_line(t_game *game, double x, double y, double ray);
+double			dda_line_drawing(t_game *game, double x, double y, double ray);
+void			ray_cast(t_game *game, int x, int y, double ray);
+
+// texture.c
+void			detect_direction(t_game *game, int x, int y, double ray);
+unsigned int		get_wall_color(t_game *game, int x, int y);
+void			draw_textures(t_game *game, int x, double y, double wall_h);
+void			vertical_line(t_game *game, int x, double dist);
+
+// main.c
+int			ft_exit(t_game *game);
+int			render_3d(t_game *game);
+void			init_image(t_game *game);
+void			destroy_all(t_game *game);
 
 #endif
